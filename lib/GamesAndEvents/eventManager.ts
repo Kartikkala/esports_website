@@ -14,12 +14,12 @@ class GameEvent extends EventEmitter implements IGameEvent{
   private _fee : number
   private _eventDateTime : string
   
-  constructor(game: IGame, prizepool : number = 0, eventdate : string, eventTime : string ,fee : number = 0, players?: string[]) {
+  constructor(game: IGame, prizepool : number = 0, eventDateTime : string ,fee : number = 0, players?: string[]) {
     super();
     this.game = game;
     this._prizepool = prizepool
     this._fee = fee
-    this._eventDate =
+    this._eventDateTime = eventDateTime
 
     if(players !== undefined)
     {
@@ -99,7 +99,7 @@ export class GameEventsManager {
         let event : IGameEvent
         if(game)
         {
-          event = new GameEvent(game, eventDocument.prizepool, eventDocument.fee ,eventDocument.players) // Get the game from the gameManager and pass here
+          event = new GameEvent(game, eventDocument.prizepool, eventDocument.eventDateTime ,eventDocument.fee ,eventDocument.players) // Get the game from the gameManager and pass here
           events.push(event)
         }
       });
@@ -109,8 +109,8 @@ export class GameEventsManager {
   }
 
   // Method to create a new game event
-  public async createEvent(game: IGame ,prizepool : number = 0, fee : number=0): Promise<IGameEvent | undefined> {
-      const newEvent = new GameEvent(game, prizepool, fee);
+  public async createEvent(game: IGame ,prizepool : number = 0, eventDateTime : string ,fee : number=0): Promise<IGameEvent | undefined> {
+      const newEvent = new GameEvent(game, prizepool, eventDateTime ,fee);
       if(await this.database.createGameEvent(newEvent))
       {
         this.eventsMap.set(newEvent.eventId, newEvent);

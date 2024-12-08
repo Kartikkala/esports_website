@@ -15,12 +15,12 @@ export class Admin {
     }
     
     // Assuming `createGameEvent` and `createGame` are methods in '@lib/gamesAndEvents/index.ts' 
-    public createGameEvent(user : IJwtPayload, gameId : string, prizepool : number = 0, fee : number = 0) {
+    public createGameEvent(user : IJwtPayload, gameId : string, prizepool : number, eventDateTime : string ,fee : number = 0) {
         if (user.admin) {
             const game = this.gamesAndEvents.getGameWithId(gameId)
             if(game)
             {
-                return this.gamesAndEvents.createEvent(game, prizepool, fee);
+                return this.gamesAndEvents.createEvent(game, prizepool, eventDateTime ,fee);
             }
         } else {
             throw new Error("User is not an admin");

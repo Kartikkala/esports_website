@@ -27,8 +27,8 @@ export default class GameAndEventsManagerFactory implements IGameAndEventsManage
     }
     
     // This method will create a new event using the GameEventsManager instance
-    public async createEvent(game: IGame, prizepool : number = 0, fee : number = 0): Promise<IGameEvent | undefined> {
-        return this.gameEventsManager.createEvent(game, prizepool, fee);
+    public async createEvent(game: IGame, prizepool : number, eventDateTime : string ,fee : number = 0): Promise<IGameEvent | undefined> {
+        return this.gameEventsManager.createEvent(game, prizepool, eventDateTime ,fee);
     }
     
     // This method will retrieve an existing game event by its id using the GameEventsManager instance

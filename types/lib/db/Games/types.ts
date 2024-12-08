@@ -17,7 +17,7 @@ export interface IGameDocument{
 
 export interface IGameDatabase{
     getGames() : Promise<IGameDocument[]>,
-    getGameById(id : String): Promise<IGameDocument | undefined>,
+    getGameById(id : String): Promise<IGameDocument | undefined | null>,
     addGame(game : IGame) : Promise<boolean>,
     removeGame(game : IGame) : Promise<boolean>,
     updateGame(game : IGame, newerGameObject : IGame) : Promise<boolean>

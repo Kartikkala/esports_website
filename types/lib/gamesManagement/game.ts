@@ -10,8 +10,7 @@ export interface IGame{
 
 export interface IGameEvent{
     game : IGame,
-    eventDate : Date,
-    eventTime : string,
+    eventDateTime : String,
     players: Set<string> ,
     eventStatus : boolean,
     eventId : string,
@@ -33,7 +32,7 @@ export interface IGameManager {
 
 
 export interface IGameAndEventsManagerFactory {
-    createEvent(game: IGame, prizepool?: number, fee? : number): Promise<IGameEvent | undefined>;
+    createEvent(game: IGame, prizepool: number, eventDateTime : string ,fee? : number): Promise<IGameEvent | undefined>;
     getEvent(eventId: string): IGameEvent | undefined;
     deleteEvent(eventId: string): Promise<boolean>;
     getAllEvents() : Array<IGameEvent>

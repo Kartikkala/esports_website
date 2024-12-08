@@ -44,6 +44,7 @@ export class GameEventsDatabase implements IGameEventsDatabase{
                 let sanitizedEvent : IGameEventDocument = {
                     eventId : new Types.ObjectId(gameEvent.eventId),
                     players : Array.from(gameEvent.players),
+                    eventDateTime : String(gameEvent.eventDateTime),
                     gameId : new Types.ObjectId(gameEvent.game.gameId),
                     prizepool : gameEvent.prizepool,
                     fee : gameEvent.fee

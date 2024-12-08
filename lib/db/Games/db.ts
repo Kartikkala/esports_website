@@ -1,6 +1,6 @@
-import { IGameDatabase, IGameDocument } from "../../../types/lib/db/Games/types"
-import { IGame } from "../../../types/lib/gamesManagement/game"
-import { IDatabase } from "../../../types/lib/db/UserMangement/types"
+import { IGameDatabase, IGameDocument } from "../../../types/lib/db/Games/types.js"
+import { IGame } from "../../../types/lib/gamesManagement/game.js"
+import { IDatabase } from "../../../types/lib/db/UserMangement/types.js"
 import gamesCollection from "./models"
 
 export class GameDatabase implements IGameDatabase{
@@ -17,7 +17,7 @@ export class GameDatabase implements IGameDatabase{
     }
     async getGames(): Promise<IGameDocument[]> {
         const connectionStatus = await this.database.connectToDatabase()
-        let result = []
+        let result : IGameDocument[] = []
         if(connectionStatus)
         {
             try{
@@ -30,9 +30,9 @@ export class GameDatabase implements IGameDatabase{
         }
         return result
     }
-    async getGameById(id : String): Promise<IGameDocument | undefined> {
+    async getGameById(id : String): Promise<IGameDocument | undefined | null> {
         const connectionStatus = await this.database.connectToDatabase()
-        let result = undefined
+        let result : IGameDocument | undefined | null = undefined
         if(connectionStatus)
         {
             try{

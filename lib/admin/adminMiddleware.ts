@@ -22,8 +22,9 @@ export class AdminMiddleware {
             const gameId = req.body.gameId;
             const prizepool = req.body.prizepool;
             const fee = req.body.fee;
+            const eventDateTime = req.body.eventDateTime
             
-            const gameEvent: IGameEvent | undefined = await this.adminInstance.createGameEvent(req.user, gameId, prizepool);
+            const gameEvent: IGameEvent | undefined = await this.adminInstance.createGameEvent(req.user, gameId, prizepool, eventDateTime, fee);
             
             if (gameEvent) {
                 res.locals.gameEvent = gameEvent;
