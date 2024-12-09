@@ -5,7 +5,10 @@ import { ICurrencyDocument } from "../../../types/lib/db/Currency/types.js";
 
 export function currencySchema(mongoose: IDatabase): Schema<ICurrencyDocument> {
     return new mongoose.Schema<ICurrencyDocument>({
-        emailId:  String,
+        emailId:  {
+            type : String,
+            required : true
+        },
         totalMoney : {
             type : Number,
             default : 0,

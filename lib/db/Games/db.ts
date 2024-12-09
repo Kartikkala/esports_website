@@ -1,7 +1,7 @@
 import { IGameDatabase, IGameDocument } from "../../../types/lib/db/Games/types.js"
 import { IGame } from "../../../types/lib/gamesManagement/game.js"
 import { IDatabase } from "../../../types/lib/db/UserMangement/types.js"
-import gamesCollection from "./models"
+import gamesCollection from "./models.js"
 
 export class GameDatabase implements IGameDatabase{
     private gameCollection

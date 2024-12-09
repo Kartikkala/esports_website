@@ -5,11 +5,11 @@ import { IDatabase } from "../../../types/lib/db/UserMangement/types.js";
 export function gameEventSchema(mongoose: IDatabase): Schema<IGameEventDocument> {
     return new mongoose.Schema<IGameEventDocument>({
         eventId:  {
-            type: Schema.Types.ObjectId, 
+            type: String, 
             required: true                  // This field is mandatory and every game event should refer to a game
         },
         players: [String],                   // The list of user ids participating in this event
-        gameId : Types.ObjectId,
+        gameId : String,
         prizepool : Number,
         fee : Number,
         roomId: {

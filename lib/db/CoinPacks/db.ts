@@ -1,4 +1,4 @@
-import CoinPackModel from "./models";
+import CoinPackModel from "./models.js";
 import { IDatabase } from "../../../types/lib/db/UserMangement/types";
 import { Types, Model } from "mongoose";
 import { ICoinPackDocument, ICoinPacksDatabase } from "../../../types/lib/db/CoinPacks/types";

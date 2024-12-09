@@ -29,7 +29,7 @@ export default class DatabaseFactory{
         {
             throw new Error("Please use DatabaseFactory.getInstance method to create an instance")
         }
-        const dbName = db_configs.user_auth_db_name
+        const dbName = db_configs.db_name
         const connectionTimeoutDurationMs = db_configs.connection_timeout_ms || 12000
         const userCollectionName = db_configs.user_auth_db_collection_name || "users"
         const gamesCollectionName = db_configs.game_collection_name || "games"

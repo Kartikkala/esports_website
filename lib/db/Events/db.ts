@@ -1,9 +1,9 @@
-import GameEventModel from './models.ts'; 
-import { IGameEventDocument, IGameEventsDatabase } from '../../../types/lib/db/GameEvents/types.ts';
-import { IGameEvent } from '../../../types/lib/gamesManagement/game.ts';
+import GameEventModel from './models.js'; 
+import { IGameEventDocument, IGameEventsDatabase } from '../../../types/lib/db/GameEvents/types.js';
+import { IGameEvent } from '../../../types/lib/gamesManagement/game.js';
 import { Model, Types } from 'mongoose';
-import { IDatabase } from '../../../types/lib/db/UserMangement/types.ts';
-import { IGame } from '../../../types/lib/gamesManagement/game.ts';
+import { IDatabase } from '../../../types/lib/db/UserMangement/types.js';
+import { IGame } from '../../../types/lib/gamesManagement/game.js';
 
 export class GameEventsDatabase implements IGameEventsDatabase{
     private gameEventCollection: Model<IGameEventDocument>;
@@ -42,10 +42,10 @@ export class GameEventsDatabase implements IGameEventsDatabase{
         if(connectionStatus) {
             try{
                 let sanitizedEvent : IGameEventDocument = {
-                    eventId : new Types.ObjectId(gameEvent.eventId),
+                    eventId : gameEvent.eventId,
                     players : Array.from(gameEvent.players),
                     eventDateTime : String(gameEvent.eventDateTime),
-                    gameId : new Types.ObjectId(gameEvent.game.gameId),
+                    gameId : gameEvent.game.gameId,
                     prizepool : gameEvent.prizepool,
                     fee : gameEvent.fee
                 };

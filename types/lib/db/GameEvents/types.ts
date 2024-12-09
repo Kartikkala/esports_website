@@ -2,10 +2,10 @@ import { Date, Types } from "mongoose";
 import { IGameEvent } from "../../gamesManagement/game"
 
 export interface IGameEventDocument {
-    eventId: Types.ObjectId;   // MongoDB Object ID for the GameEvent document
+    eventId: String;   // MongoDB Object ID for the GameEvent document
     eventDateTime : string,
     players: string[];          // The list of user ids participating in this event
-    gameId: Types.ObjectId;   // Reference to a Game document, not collection name
+    gameId: String;   // Reference to a Game document, not collection name
     roomId?: string;           // Room Id for the event if any
     prizepool : number,
     fee : number,

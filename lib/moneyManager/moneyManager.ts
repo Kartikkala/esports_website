@@ -1,7 +1,6 @@
-import { IUserCurrency } from "../../types/lib/moneyManager/types";
-import { Razorpay } from "razorpay-typescript";
-import { ICurrencyDatabase } from "../../types/lib/db/Currency/types";
-import { ICoinPacksDatabase } from "../../types/lib/db/CoinPacks/types";
+import Razorpay from 'razorpay'
+import { ICurrencyDatabase } from "../../types/lib/db/Currency/types.js";
+import { ICoinPacksDatabase } from "../../types/lib/db/CoinPacks/types.js";
 
 
 export default class MoneyManager{
@@ -32,12 +31,25 @@ export default class MoneyManager{
         return currency;
     }
 
-    public async buyMoneyPack(moneyPackId : string)
+    public async buyMoneyPack(email : string, moneyPackId : string)
     {
-        
-        // A way to choose money pack and buy it
+        const packs = await this.coinPacksDb.getCoinPacks()
+        for(let i=0;i<packs.length;i++)
+        {
+            const pack = packs[i]
+            if(pack._id.toString() === moneyPackId)
+            {
 
-        // Uses razorpay
+                // ------------------- Use razorpay here ----------------------- //
+                return await this.currencyDb.addCurrencyWithId(pack.coins, email)
+            }
+        }
+        return false
+    }
+
+    public async createMoneyPack(coins : number, price : number)
+    {
+        return await this.coinPacksDb.createCoinPack(coins, price)
     }
 
     public async getMoneypacks()
@@ -48,6 +60,11 @@ export default class MoneyManager{
     public async deleteMoneyPack(id : string)
     {
         return await this.coinPacksDb.deleteCoinPack(id)
+    }
+
+    public async deductMoney(email : string, amount : number)
+    {
+        return await this.currencyDb.deductFromUserAccountByID(amount, email)
     }
 
     public async modifyMoneyPack(id : string, newCoinsAmount : number, newPrice : number)

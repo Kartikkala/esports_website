@@ -1,8 +1,8 @@
-import { GameEventsManager } from "./eventManager";
-import GameManager from "./gameManager";
-import { IGameManager, IGameEvent, IGame, IGameAndEventsManagerFactory } from "../../types/lib/gamesManagement/game";
-import { IGameEventsDatabase } from "../../types/lib/db/GameEvents/types";
-import { IGameDatabase } from "../../types/lib/db/Games/types";
+import { GameEventsManager } from "./eventManager.js";
+import GameManager from "./gameManager.js";
+import { IGameManager, IGameEvent, IGame, IGameAndEventsManagerFactory } from "../../types/lib/gamesManagement/game.js";
+import { IGameEventsDatabase } from "../../types/lib/db/GameEvents/types.js";
+import { IGameDatabase } from "../../types/lib/db/Games/types.js";
 
 
 export default class GameAndEventsManagerFactory implements IGameAndEventsManagerFactory{

@@ -17,7 +17,7 @@ export default class AuthenticationFactory{
         }
         this.jwtAuthInstance = new JwtAuthenticator(database, privateKey, publicKey)
     }
-    public static getInstance(database? : IAuthenticationDatabase, keysConfigs? : any)
+    public static getInstance(database : IAuthenticationDatabase, keysConfigs : any)
     {
         if(!this.instance)
         {
@@ -41,6 +41,7 @@ export default class AuthenticationFactory{
         mkdirSync(keysConfigs.keypair_directory, {recursive : true})
         const pubKeyPath = path.join(keysConfigs.keypair_directory,keysConfigs.publickey_filename )
         const privKeyPath = path.join(keysConfigs.keypair_directory,keysConfigs.privatekey_filename )
+
         const result = {
             message : "Generating new key pair!!!",
             path_pub : pubKeyPath,

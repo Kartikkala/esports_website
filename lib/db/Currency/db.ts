@@ -1,7 +1,7 @@
-import CurrencyModel from './models.ts'; 
+import CurrencyModel from './models.js'; 
 import { Model } from 'mongoose';
-import { IDatabase } from '../../../types/lib/db/UserMangement/types.ts';
-import { ICurrencyDocument, ICurrencyDatabase } from '../../../types/lib/db/Currency/types.ts';
+import { IDatabase } from '../../../types/lib/db/UserMangement/types.js';
+import { ICurrencyDocument, ICurrencyDatabase } from '../../../types/lib/db/Currency/types.js';
 
 export class CurrencyDatabase implements ICurrencyDatabase {
     private currencyCollection: Model<ICurrencyDocument>;
@@ -15,27 +15,34 @@ export class CurrencyDatabase implements ICurrencyDatabase {
         this.currencyCollection = CurrencyModel(database, currencyCollectionName);
     }
 
-    async addCurrencyWithId(amount: number, userEmail: string): Promise<Boolean> {
+    async addCurrencyWithId(amount: number, emailId: string): Promise<Boolean> {
         if (amount <= 0) {
             throw new Error("Amount must be greater than 0");
         }
+
 
         if(await this.database.connectToDatabase())
         {
             // Find the user document by email and update its currency amount
             try{
-                const response = await this.currencyCollection.findOneAndUpdate(
-                    {userEmail: userEmail},
+                let response = await this.currencyCollection.findOneAndUpdate(
+                    {emailId: emailId},
                     {$inc: {'totalMoney': amount}},
                     {new: true}  // return the updated document
                 );
+
                 if(response)
                 {
                     return true
                 }
                 else {
-                    throw new Error("User not found");
+                    const document = {
+                        emailId : emailId,
+                        totalMoney : amount
+                    }
+                    response = await this.currencyCollection.create(document)
                 }
+                return true
             }
             catch(e){
                 console.error(e)
@@ -44,7 +51,7 @@ export class CurrencyDatabase implements ICurrencyDatabase {
         return false
     }
 
-    async deductFromUserAccountByID(amount: number, userEmail: string): Promise<ICurrencyDocument | null> {
+    async deductFromUserAccountByID(amount: number, emailId: string): Promise<ICurrencyDocument | null> {
         // Check if amount is valid
         if (amount <= 0) {
             throw new Error("Amount must be greater than 0");
@@ -53,7 +60,7 @@ export class CurrencyDatabase implements ICurrencyDatabase {
         if(await this.database.connectToDatabase())
         {
             // Find the user document by email and update its currency amount
-            result = await this.currencyCollection.findOne({userEmail: userEmail});
+            result = await this.currencyCollection.findOne({emailId: emailId});
             
             if (!result) {
                 throw new Error("User not found");
@@ -61,7 +68,7 @@ export class CurrencyDatabase implements ICurrencyDatabase {
                 throw new Error("Insufficient balance, transaction denied");    // Balance cannot go below 0
             } else {
                 result = await this.currencyCollection.findOneAndUpdate(
-                    {userEmail: userEmail},
+                    {emailId: emailId},
                     {$inc: {'totalMoney': -amount}},
                     {new: true}   // return the updated document
                 );
@@ -71,13 +78,13 @@ export class CurrencyDatabase implements ICurrencyDatabase {
 
     }
 
-    async getTotalUserCurrencyById(userEmail: string): Promise<ICurrencyDocument | null> {
+    async getTotalUserCurrencyById(emailId: string): Promise<ICurrencyDocument | null> {
         let result = null
 
         if(await this.database.connectToDatabase())
         {
             try{
-                result = await this.currencyCollection.findOne({userEmail: userEmail});
+                result = await this.currencyCollection.findOne({emailId: emailId});
                 if (result) {
                     return result;
                 } else {

@@ -1,7 +1,7 @@
-import { IGameDatabase } from "../../types/lib/db/Games/types"
+import { IGameDatabase } from "../../types/lib/db/Games/types.js"
 import crypto from 'crypto'
-import { IGame } from "../../types/lib/gamesManagement/game"
-import { IGameManager } from "../../types/lib/gamesManagement/game"
+import { IGame } from "../../types/lib/gamesManagement/game.js"
+import { IGameManager } from "../../types/lib/gamesManagement/game.js"
 
 class Game{
     public gameId : string

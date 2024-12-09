@@ -1,7 +1,7 @@
-import { IGame, IGameEvent } from "../../types/lib/gamesManagement/game.ts"
-import {IGameEventsDatabase} from "../../types/lib/db/GameEvents/types.ts"
+import { IGame, IGameEvent } from "../../types/lib/gamesManagement/game.js"
+import {IGameEventsDatabase} from "../../types/lib/db/GameEvents/types.js"
 import {EventEmitter} from "events"
-import {IGameManager} from "../../types/lib/gamesManagement/game.ts"
+import {IGameManager} from "../../types/lib/gamesManagement/game.js"
 import crypto from 'crypto'
 
 
@@ -9,20 +9,21 @@ class GameEvent extends EventEmitter implements IGameEvent{
   public readonly game : IGame;
   public readonly players: Set<string> = new Set();
   private _eventStatus : boolean = false
-  public readonly eventId = crypto.randomUUID().toString()
+  public readonly eventId : string
   private _prizepool : number
   private _fee : number
   private _eventDateTime : string
   
-  constructor(game: IGame, prizepool : number = 0, eventDateTime : string ,fee : number = 0, players?: string[]) {
+  constructor(game: IGame, prizepool : number = 0, eventDateTime : string ,fee : number = 0, eventId : string = crypto.randomUUID().toString(), players?: string[]) {
     super();
     this.game = game;
     this._prizepool = prizepool
+    this.eventId = eventId                       
     this._fee = fee
     this._eventDateTime = eventDateTime
-
+    
     if(players !== undefined)
-    {
+      {
         for (let user of players) {
           this.players.add(user);
         }
@@ -99,7 +100,7 @@ export class GameEventsManager {
         let event : IGameEvent
         if(game)
         {
-          event = new GameEvent(game, eventDocument.prizepool, eventDocument.eventDateTime ,eventDocument.fee ,eventDocument.players) // Get the game from the gameManager and pass here
+          event = new GameEvent(game, eventDocument.prizepool, eventDocument.eventDateTime ,eventDocument.fee , eventDocument.eventId.toString() ,eventDocument.players) // Get the game from the gameManager and pass here
           events.push(event)
         }
       });

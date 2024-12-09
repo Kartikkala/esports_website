@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import {Admin} from './admin'; // Assuming this file contains your Admin class definition
-import { IGameAndEventsManagerFactory, IGameEvent } from '../../types/lib/gamesManagement/game';
+import {Admin} from './admin.js';
+import { IGameAndEventsManagerFactory, IGameEvent } from '../../types/lib/gamesManagement/game.js';
 
 export class AdminMiddleware {
     private static adminMiddlewareInstance : AdminMiddleware | null = null;
@@ -27,7 +27,17 @@ export class AdminMiddleware {
             const gameEvent: IGameEvent | undefined = await this.adminInstance.createGameEvent(req.user, gameId, prizepool, eventDateTime, fee);
             
             if (gameEvent) {
-                res.locals.gameEvent = gameEvent;
+
+                const result = {
+                    eventId : gameEvent.eventId,
+                    totalPlayersRegistered : gameEvent.players.size,
+                    game : gameEvent.game,
+                    eventStatus : gameEvent.eventStatus,
+                    prizepool : gameEvent.prizepool,
+                    fee : gameEvent.fee,
+                    eventDateTime : gameEvent.eventDateTime
+                }
+                res.json(result);
             } else {
                 res.json({message:  "Invalid game ID!"});
             }
@@ -50,6 +60,20 @@ export class AdminMiddleware {
                 } catch(err) {
                     console.error(err);
                     res.status(500).send('Error creating game');
+                }
+        } else  {
+            res.status(400).send('Missing required parameters');    // 400 for bad request
+        }
+    };
+
+    public getGamesMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+        if(req.user){
+                try{
+                    const games = this.adminInstance.getGames(req.user);
+                    res.json(games);
+                } catch(err) {
+                    console.error(err);
+                    res.status(500).send('Error getting games');
                 }
         } else  {
             res.status(400).send('Missing required parameters');    // 400 for bad request

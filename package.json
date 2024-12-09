@@ -30,7 +30,6 @@
     "nodemailer": "^6.9.15",
     "password-validator": "^5.3.0",
     "razorpay": "^2.9.4",
-    "razorpay-typescript": "^1.0.12",
     "socket.io": "^4.7.5",
     "typescript": "^5.6.2"
   },

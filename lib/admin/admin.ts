@@ -1,5 +1,5 @@
 import { IJwtPayload } from '../../types/lib/authentication/jwt/helper/types'; // assuming types are defined somewhere else
-import { IGameAndEventsManagerFactory } from '../../types/lib/gamesManagement/game';
+import { IGameAndEventsManagerFactory } from '../../types/lib/gamesManagement/game.js';
 
 export class Admin {
     private static instance: Admin; // singleton instance
@@ -14,7 +14,7 @@ export class Admin {
         return Admin.instance;
     }
     
-    // Assuming `createGameEvent` and `createGame` are methods in '@lib/gamesAndEvents/index.ts' 
+    // Assuming `createGameEvent` and `createGame` are methods in '@lib/gamesAndEvents/index.js' 
     public createGameEvent(user : IJwtPayload, gameId : string, prizepool : number, eventDateTime : string ,fee : number = 0) {
         if (user.admin) {
             const game = this.gamesAndEvents.getGameWithId(gameId)
@@ -31,6 +31,17 @@ export class Admin {
         if (user.admin) {
             return this.gamesAndEvents.createNewGame(name, type, maxTeams, maxTeamMembers,modeName, imageBanner);
         } else {
+            throw new Error("User is not an admin");
+        }
+    }
+
+    public getGames(user : IJwtPayload)
+    {
+        if(user.admin)
+        {
+            return this.gamesAndEvents.getAllGames()
+        }
+        else{
             throw new Error("User is not an admin");
         }
     }

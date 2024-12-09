@@ -1,4 +1,4 @@
-import { IJwtPayload } from "./types.ts"
+import { IJwtPayload } from "./types.js"
 import express from 'express';
 
 declare global {

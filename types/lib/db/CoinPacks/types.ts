@@ -1,4 +1,7 @@
+import { Types } from "mongoose";
+
 export interface ICoinPackDocument{
+    _id : Types.ObjectId,
     coins : number,
     price : number
 }
