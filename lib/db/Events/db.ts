@@ -31,11 +31,6 @@ export class GameEventsDatabase implements IGameEventsDatabase{
      }
     return result;
     }
-
-    sanitize(input: string): string {
-        // Replace potentially harmful characters with safe alternatives
-        return input.replace(/[$.]/g, '');
-    }
     
     async createGameEvent(gameEvent: IGameEvent): Promise<boolean> {
         const connectionStatus = await this.database.connectToDatabase();
@@ -78,10 +73,7 @@ export class GameEventsDatabase implements IGameEventsDatabase{
         
         if (connectionStatus)   {
             try  {
-                // Sanitize each player's name before inserting it into the array
-                const sanitizedPlayers = players.map(player => this.sanitize(player));
-                
-                await this.gameEventCollection.updateOne({ eventId: new Types.ObjectId(gameEventId) }, { $set: { players: sanitizedPlayers } }); 
+                await this.gameEventCollection.updateOne({ eventId: gameEventId }, { $set: { players: players } }); 
                 return true;
              } catch (e)  {
                 console.error(e);

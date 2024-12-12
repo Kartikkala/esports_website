@@ -142,13 +142,12 @@ export class GameEventsManager {
 
   public async registerForEvent(email: string, eventId: string): Promise<boolean> {
     const event = this.getEvent(eventId)
-    if (event){
+    if (event && !event.players.has(email)){
       event.addPlayer(email);
       await this.database.updatePlayers(eventId, Array.from(event.players));
       return true;
-    } else {
-      throw new Error('No such game event exists');
-    }
+    } 
+    return false
   }
     
 }

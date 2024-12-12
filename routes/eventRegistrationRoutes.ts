@@ -46,36 +46,53 @@ export default function EventRegistrationRouter(gameAndEventsManagerFactory : IG
     })
 
     router.post("/registerForEvent", async (req, res)=>{
+
+        // --------------------------------------------------------------If user is already registered, why register him/her again and again--------------------------------------------------------------------------------------------------------------
         // Use inbuilt money class
-        if(req.user)
+        if(req.user && req.body && req.body.eventId)
         {
             const event = gameAndEventsManagerFactory.getEvent(req.body.eventId)
-            if(event && event.addPlayer(req.user.email))
-            {
-                try{
-                    const oldMoney = (await moneyManager.getUserMoney(req.user.email)).totalMoney
-                    if(oldMoney < event.fee)
-                    {
-                        return res.status(401).send("Insufficient Balance!")
-                    }
+            if(event)
+                {
+                    try{
+                        const oldMoney = (await moneyManager.getUserMoney(req.user.email)).totalMoney
+                        if(oldMoney < event.fee)
+                        {
+                            return res.status(401).send("Insufficient Balance!")
+                        }
+                            
+                        const newMoney = (await moneyManager.deductMoney(req.user.email, event.fee))?.totalMoney
+                        const eventRegistrationResult = await gameAndEventsManagerFactory.registerPlayerForEvent(req.body.eventId, req.user.email)
 
-                    const newMoney = (await moneyManager.deductMoney(req.user.email, event.fee))?.totalMoney
-                    const result = {
+                        //--------------------------------- Replace with mongodb transactions ---------------------------------//
+
+                        if(!eventRegistrationResult)
+                        {
+                            await moneyManager.addMoney(req.user.email, event.fee)
+                            return res.json(
+                                {
+                                    success : false,
+                                    newMoney : oldMoney
+                                }
+                            )
+                        }
+                        
+                    return res.json({
                         success : (oldMoney != newMoney) && (event.players.has(req.user.email)),
                         newMoney : newMoney
-                    }
-
-                    res.json(result)
+                    })
                 }
                 catch(e : any)
                 {
-                    res.status(401).send("No wallet recharge!")
+                    return res.status(401).send("No wallet recharge!")
                 }
             }
             else{
-                res.status(500).send("Internal Server Error")
+                return res.status(500).send("No such event!")
             }
         }
+
+        res.status(400).send("eventId not found!")
     })
     
     return router;

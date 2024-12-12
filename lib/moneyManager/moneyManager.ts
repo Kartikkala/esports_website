@@ -67,6 +67,11 @@ export default class MoneyManager{
         return await this.currencyDb.deductFromUserAccountByID(amount, email)
     }
 
+    public async addMoney(email : string, amount : number)
+    {
+        return await this.currencyDb.addCurrencyWithId(amount, email)
+    }
+
     public async modifyMoneyPack(id : string, newCoinsAmount : number, newPrice : number)
     {
         return await this.coinPacksDb.updateCoinPack(id, newCoinsAmount, newPrice)

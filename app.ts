@@ -13,6 +13,9 @@ import MoneyManager from "./lib/moneyManager/moneyManager.js";
 import Razorpay from 'razorpay'
 
 const app = express();
+const rzp = new Razorpay({key_id : "something"}) // Change this
+
+
 app.use(express.json())
 app.use(express.urlencoded({extended : true}))
 
@@ -25,7 +28,6 @@ const authenticationFactory = AuthenticationFactory.getInstance(databaseFactory.
 const authorizationFactory = AuthorisationMiddlewareFactory.getInstance("Gmail", "smtp.gmail.com", 25, false, "kartikkala10december@gmail.com", "zkwydrpvlsrdxect", "GameWebsite", 6)
 const gamesAndEventManagerFactoryObject = await GameAndEventsManagerFactory.getInstance(databaseFactory.getEventDatabase(), databaseFactory.getGameDatabase())
 
-const rzp = new Razorpay({key_id : "something"}) // Change this
 const moneyManagerObject = MoneyManager.getInstance(databaseFactory.getCurrencyDatabase(), databaseFactory.getCoinPacksDatabase(), rzp)
 
 

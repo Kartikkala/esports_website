@@ -35,7 +35,8 @@ export interface IGameAndEventsManagerFactory {
     createEvent(game: IGame, prizepool: number, eventDateTime : string ,fee? : number): Promise<IGameEvent | undefined>;
     getEvent(eventId: string): IGameEvent | undefined;
     deleteEvent(eventId: string): Promise<boolean>;
-    getAllEvents() : Array<IGameEvent>
+    getAllEvents() : Array<IGameEvent>,
+    registerPlayerForEvent(eventId : string, email : string) : Promise<Boolean>,
     
     getGameWithId(gameId  : string)  : IGame | undefined
     createNewGame(name: string, type: boolean, maxTeams?: number, maxTeamMembers?: number, modeName?: string, imageBanner?: Buffer): Promise<boolean>;
