@@ -1,4 +1,5 @@
 import express from "express";
+import cors from 'cors'
 
 import AdminRouter from "./routes/adminRoutes.js";
 import getAuthenticationRouter from "./routes/authenticationRoutes.js";
@@ -18,6 +19,7 @@ const rzp = new Razorpay({key_id : "something"}) // Change this
 
 app.use(express.json())
 app.use(express.urlencoded({extended : true}))
+app.use(cors({origin : "http://localhost:5173",credentials : true}))
 
 const databaseFactory = DatabaseFactory.getInstance("mongodb+srv://SirKartik:5pcPc.zG3HxvN3a@cluster0.m3smbq8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
     "db_name" : "esports_website",

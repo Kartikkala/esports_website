@@ -11,8 +11,6 @@ export default function getAuthenticationRouter(authenticationFactory : Authenti
     authenticationRouter.post('/login', jwtAuthenticator.login)
     authenticationRouter.post('/register', authorization.verifyOtpMiddleware ,jwtAuthenticator.register, (request, response)=>{
         const registrationResult : IRegistrationResult = response.locals.registrationResult
-        // Maybe make use of this
-        const userDriveDetails = response.locals.userDriveDetails
 
         registrationResult.user = undefined
         switch (registrationResult.message){

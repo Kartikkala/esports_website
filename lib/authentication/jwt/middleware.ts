@@ -30,7 +30,13 @@ export default class JwtAuthenticator extends JwtAuthentication implements IJwtA
         if(user.userDocument)
         {
             const res = {success : user.success, error : user.error, token : await this.issueJwt(user.userDocument)}
-            response.status(200).json(res)
+            // response.status(200).cookie("token", await this.issueJwt(user.userDocument))
+            response.status(200)
+            .cookie("token", await this.issueJwt(user.userDocument), {
+              secure: false,
+              maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
+            })
+            .json({ success: true, message: "Login successful!" });
         }
         else
         {
