@@ -20,9 +20,9 @@ const rzp = new Razorpay({key_id : "something"}) // Change this
 config({path : ".env"})
 
 
-app.use(express.json())
-app.use(express.urlencoded({extended : true}))
-app.use(cors({origin : appConfig.frontendUrl,credentials : true}))
+app.use(express.json({limit : "4mb"}))
+app.use(express.urlencoded({extended : true, limit : "4mb"}))
+app.use(cors({origin : appConfig.frontendUrl,credentials : true, methods: ['GET', 'POST', 'PUT', 'DELETE'], allowedHeaders: ['Content-Type', 'Authorization']}))
 
 const dbConnectionString = process.env.MONGO_CONNECTION_STRING
 const senderEmailPassword = process.env.USER_EMAIL_PASSWORD

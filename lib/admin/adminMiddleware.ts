@@ -53,9 +53,14 @@ export class AdminMiddleware {
             && req.body.type !== undefined && req.body.maxTeams !== undefined 
             && req.body.maxTeamMembers !== undefined){
                 try{
+                    let base64Image = req.body.imageBanner
+                    if(req.body.imageBanner)
+                    {
+                        base64Image = req.body.imageBanner.replace(/^data:image\/\w+;base64,/, "");
+                    }
                     await this.adminInstance.createGame(req.user, req.body.name, req.body.type, 
                                                         req.body.modeName, req.body.maxTeamMembers, 
-                                                        req.body.maxTeams, req.body.imageBanner);
+                                                        req.body.maxTeams, Buffer.from(base64Image, 'base64'));
                     res.json({success: true});
                 } catch(err) {
                     console.error(err);
