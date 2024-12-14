@@ -1,5 +1,7 @@
 import express from "express";
 import cors from 'cors'
+import { appConfig } from "./configs/config.js";
+import {config} from 'dotenv'
 
 import AdminRouter from "./routes/adminRoutes.js";
 import getAuthenticationRouter from "./routes/authenticationRoutes.js";
@@ -15,19 +17,23 @@ import Razorpay from 'razorpay'
 
 const app = express();
 const rzp = new Razorpay({key_id : "something"}) // Change this
+config({path : ".env"})
 
 
 app.use(express.json())
 app.use(express.urlencoded({extended : true}))
-app.use(cors({origin : "http://localhost:5173",credentials : true}))
+app.use(cors({origin : appConfig.frontendUrl,credentials : true}))
 
-const databaseFactory = DatabaseFactory.getInstance("mongodb+srv://SirKartik:5pcPc.zG3HxvN3a@cluster0.m3smbq8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
-    "db_name" : "esports_website",
-}); // Import configs from a file
+const dbConnectionString = process.env.MONGO_CONNECTION_STRING
+const senderEmailPassword = process.env.USER_EMAIL_PASSWORD
+
+const databaseFactory = DatabaseFactory.getInstance(dbConnectionString, {
+    "db_name" : appConfig.dbName,
+}); // Import appConfigs from a file
 
 
 const authenticationFactory = AuthenticationFactory.getInstance(databaseFactory.getAuthenticationDatabase(), {"keypair_directory" : "keys", "publickey_filename" : "key.pub", "privatekey_filename" : "key.pem"})
-const authorizationFactory = AuthorisationMiddlewareFactory.getInstance("Gmail", "smtp.gmail.com", 25, false, "kartikkala10december@gmail.com", "zkwydrpvlsrdxect", "GameWebsite", 6)
+const authorizationFactory = AuthorisationMiddlewareFactory.getInstance(appConfig.smtpServiceName, appConfig.smtpServerAddress, appConfig.smtpServerPortNumber, false, appConfig.smtpServerEmail, senderEmailPassword, appConfig.smtpServerSenderName, appConfig.smtpOtpLength)
 const gamesAndEventManagerFactoryObject = await GameAndEventsManagerFactory.getInstance(databaseFactory.getEventDatabase(), databaseFactory.getGameDatabase())
 
 const moneyManagerObject = MoneyManager.getInstance(databaseFactory.getCurrencyDatabase(), databaseFactory.getCoinPacksDatabase(), rzp)

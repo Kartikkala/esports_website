@@ -1,0 +1,10 @@
+{
+    "frontendUrl" : "http://localhost:5173",
+    "dbName" : "esports_website",
+    "smtpServiceName" : "Gmail",
+    "smtpServerAddress" : "smtp.gmail.com",
+    "smtpServerPortNumber" : 25,
+    "smtpServerEmail" : "kartikkala10december@gmail.com",
+    "smtpServerSenderName" : "GameWebsite",
+    "smtpOtpLength" : 6
+}

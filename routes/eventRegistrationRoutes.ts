@@ -30,11 +30,11 @@ export default function EventRegistrationRouter(gameAndEventsManagerFactory : IG
                 if(selectedEvent.eventStatus)
                 {
                     ongoingEvents.push(shortenedEvent)
-                    selectedEvent.players.has(req.user.email) ? registeredEvents.push(shortenedEvent) : null
                 }
                 else
                 {
                     upcomingEvents.push(shortenedEvent)
+                    selectedEvent.players.has(req.user.email) ? registeredEvents.push(shortenedEvent) : null
                 }
             }
             res.json({
