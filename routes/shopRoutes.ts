@@ -8,6 +8,15 @@ export default function ShopRouter(moneyManager : MoneyManager)
     const router = express.Router();
     router.use(express.json()); // for parsing application/json
 
+    router.get("/getCurrency", async (req, res)=>{
+        if(req.user)
+        {
+            const currency = await moneyManager.getUserMoney(req.user.email)
+            return res.json({totalMoney : currency.totalMoney})
+        }
+        return res.status(500).send("Internal Server error!")
+    })
+
 
     router.get("/getPacks", async (req, res)=>{
         const packs = await moneyManager.getMoneypacks()
@@ -19,6 +28,7 @@ export default function ShopRouter(moneyManager : MoneyManager)
     router.post("/buyPack", async(req, res)=>{
         if(req.body && req.body.packId && req.user)
         {
+            console.log(req.user)
             const result = await moneyManager.buyMoneyPack(req.user.email, req.body.packId)
             return res.json({"success" : result})
         }

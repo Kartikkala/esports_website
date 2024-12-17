@@ -10,6 +10,7 @@ class GameEvent extends EventEmitter implements IGameEvent{
   public readonly players: Set<string> = new Set();
   private _eventStatus : boolean = false
   public readonly eventId : string
+  public roomId : string | undefined
   private _prizepool : number
   private _fee : number
   private _eventDateTime : string
@@ -32,6 +33,7 @@ class GameEvent extends EventEmitter implements IGameEvent{
   
   public publishRoomID(roomId: string): void  {
     console.log('Room ID published: ', roomId);
+    this.roomId = roomId
     this.emit('event', roomId, Array.from(this.players));
   }
 

@@ -37,13 +37,13 @@ export class AdminMiddleware {
                     fee : gameEvent.fee,
                     eventDateTime : gameEvent.eventDateTime
                 }
-                res.json(result);
+                return res.json(result);
             } else {
-                res.json({message:  "Invalid game ID!"});
+                return res.json({message:  "Invalid game ID!"});
             }
             next();
         } else {
-            res.status(401).send('Unauthorized');
+            return res.status(401).send('Unauthorized');
         }
     }
 
@@ -57,17 +57,23 @@ export class AdminMiddleware {
                     if(req.body.imageBanner)
                     {
                         base64Image = req.body.imageBanner.replace(/^data:image\/\w+;base64,/, "");
+                        await this.adminInstance.createGame(req.user, req.body.name, req.body.type, 
+                                                            req.body.modeName, req.body.maxTeamMembers, 
+                                                            req.body.maxTeams, Buffer.from(base64Image, 'base64'));
                     }
-                    await this.adminInstance.createGame(req.user, req.body.name, req.body.type, 
-                                                        req.body.modeName, req.body.maxTeamMembers, 
-                                                        req.body.maxTeams, Buffer.from(base64Image, 'base64'));
-                    res.json({success: true});
+                    else
+                    {
+                        await this.adminInstance.createGame(req.user, req.body.name, req.body.type, 
+                            req.body.modeName, req.body.maxTeamMembers, 
+                            req.body.maxTeams, base64Image);
+                    }
+                    return res.json({success: true});
                 } catch(err) {
                     console.error(err);
-                    res.status(500).send('Error creating game');
+                    return res.status(500).send('Error creating game');
                 }
         } else  {
-            res.status(400).send('Missing required parameters');    // 400 for bad request
+            return res.status(400).send('Missing required parameters');    // 400 for bad request
         }
     };
 
@@ -75,7 +81,7 @@ export class AdminMiddleware {
         if(req.user){
                 try{
                     const games = this.adminInstance.getGames(req.user);
-                    res.json(games);
+                    return res.json(games);
                 } catch(err) {
                     console.error(err);
                     res.status(500).send('Error getting games');
@@ -92,13 +98,13 @@ export class AdminMiddleware {
                                                     req.body.name, req.body.type, 
                                                     req.body.modeName, req.body.maxTeamMembers, 
                                                     req.body.maxTeams, req.body.imageBanner);
-                res.json({success: true});
+                return res.json({success: true});
             } catch(err) {
                 console.error(err);
-                res.status(500).send('Error updating game');
+                return res.status(500).send('Error updating game');
             }
         } else  {
-            res.status(401).send('Unauthorized');     // 401 for Unauthorized, unless only admin is changing all fields
+            return res.status(401).send('Unauthorized');     // 401 for Unauthorized, unless only admin is changing all fields
         }
     };
     
@@ -106,15 +112,42 @@ export class AdminMiddleware {
         if(req.user?.admin && req.body.targetGameId){     // only admin can delete a game
             try{
                 await this.adminInstance.deleteGame(req.user, req.body.targetGameId);
-                res.json({success: true});
+                return res.json({success: true});
             } catch(err) {
                 console.error(err);
-                res.status(500).send('Error deleting game');
+                return res.status(500).send('Error deleting game');
             }
         } else  {
-            res.status(401).send('Unauthorized');     // 401 for Unauthorized, unless only admin is deleting a game
+            return res.status(401).send('Unauthorized');     // 401 for Unauthorized, unless only admin is deleting a game
         }
     };
+
+    public publishRoomIdMiddleware = (req : Request, res : Response, next : NextFunction) =>{
+        if(req.user && req.body.eventId && req.body.joinId)
+        {
+            try{
+               
+                if(this.adminInstance.publishRoomId(req.user, req.body.eventId, req.body.joinId))
+                {
+                    
+                    return res.json({success : true})
+                }
+                else{
+                    
+                    return res.json({success : false})
+                }
+            }
+            catch(err)
+            {
+                console.error(err)
+                
+                return res.status(401).send('Unauthorized')
+            }
+        }
+        else{
+            return res.status(403).send('Invalid Request!')
+        }
+    }
     
     public deleteGameEventMiddleware = async (req: Request, res: Response, next: NextFunction) => {
         if(req.user?.admin && req.body.eventId){     // only admin can delete an event

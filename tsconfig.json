@@ -110,7 +110,8 @@
     "node_modules",
     "static",
     "test",
-    "out"
+    "out",
+    "dist"
   ]
   // "include": ["types/lib/**/*"]
 }

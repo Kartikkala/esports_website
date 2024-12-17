@@ -28,6 +28,8 @@ export default function AdminRouter(gameAndEventsManagerFactory : IGameAndEvents
     // Delete game event route
     router.post('/deleteEvent', adminMiddlewareInstance.deleteGameEventMiddleware); 
 
+    router.post('/publishRoomId', adminMiddlewareInstance.publishRoomIdMiddleware);
+
     router.post("/createMoneyPack", async (req, res)=>{
         if(req.user && req.user.admin)
         {

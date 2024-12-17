@@ -21,6 +21,7 @@ export default function EventRegistrationRouter(gameAndEventsManagerFactory : IG
                 const selectedEvent = events[i]
                 const shortenedEvent = {
                     "eventId" : selectedEvent.eventId,
+                    "joinId" : selectedEvent.roomId,
                     "game" : selectedEvent.game,
                     "prizepool" : selectedEvent.prizepool,
                     "fee" : selectedEvent.fee , 

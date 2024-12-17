@@ -65,6 +65,27 @@ export class Admin {
         }
     }
 
+    public publishRoomId(user : IJwtPayload, eventId : string, roomId : string) : Boolean
+    {
+        if(user.admin)
+        {
+            
+            const event = this.gamesAndEvents.getEvent(eventId)
+            if(event)
+            {
+                
+                event.publishRoomID(roomId)
+                event.changeEventStatus()
+                return true
+            }
+        }
+        else
+        {
+            throw new Error("User is not an admin");
+        }
+        return false
+    }
+
     public deleteEvent(user: IJwtPayload, eventId: string){
         if (user.admin)  {
             return this.gamesAndEvents.deleteEvent(eventId);

@@ -2,6 +2,8 @@ import express from "express";
 import cors from 'cors'
 import { appConfig } from "./configs/config.js";
 import {config} from 'dotenv'
+import {fileURLToPath} from 'url'
+import path,{dirname} from 'path'
 
 import AdminRouter from "./routes/adminRoutes.js";
 import getAuthenticationRouter from "./routes/authenticationRoutes.js";
@@ -44,7 +46,30 @@ const authenticationRouter = getAuthenticationRouter(authenticationFactory, auth
 const eventRegistrationRouter = EventRegistrationRouter(gamesAndEventManagerFactoryObject, moneyManagerObject)
 
 const shopRouter = ShopRouter(moneyManagerObject)
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+const frontend= path.join(__dirname, "/dist")
+app.use("/",  express.static(frontend))
+app.get("/", (req, res)=>{
+    res.redirect("/api/login")
+})
 
+app.get('/api/user', authenticationFactory.jwtAuthenticator.authenticate, authenticationFactory.jwtAuthenticator.isAuthenticated, (req, res)=>{
+    if(req.user)
+    {
+        const user = {
+            name : req.user.name,
+            admin : req.user.admin,
+            email : req.user.email,
+            success : true,
+        }
+        return res.json(user)
+    }
+    else
+    {
+        return res.status(401).json({success : false})
+    }
+})
 app.use("/api/", authenticationRouter)
 app.use("/api/admin", authenticationFactory.jwtAuthenticator.authenticate, authenticationFactory.jwtAuthenticator.isAuthenticated, AdminRouter(gamesAndEventManagerFactoryObject, moneyManagerObject))
 app.use("/api/events", authenticationFactory.jwtAuthenticator.authenticate, authenticationFactory.jwtAuthenticator.isAuthenticated ,eventRegistrationRouter)

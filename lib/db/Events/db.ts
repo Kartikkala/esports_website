@@ -58,7 +58,7 @@ export class GameEventsDatabase implements IGameEventsDatabase{
         const connectionStatus = await this.database.connectToDatabase();
         if(connectionStatus) {
             try{
-                this.gameEventCollection.deleteOne({eventId : gameEvent.eventId})
+                await this.gameEventCollection.deleteOne({eventId : gameEvent.eventId})
                 return true;
             } catch(e){
                 console.error(e);

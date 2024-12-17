@@ -14,6 +14,7 @@ export interface IGameEvent{
     players: Set<string> ,
     eventStatus : boolean,
     eventId : string,
+    roomId : string | undefined,
     prizepool : number,
     fee : number,
     publishRoomID(roomId: string): void,
