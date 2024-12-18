@@ -15,40 +15,47 @@ export class CurrencyDatabase implements ICurrencyDatabase {
         this.currencyCollection = CurrencyModel(database, currencyCollectionName);
     }
 
-    async addCurrencyWithId(amount: number, emailId: string): Promise<Boolean> {
+    async createNewUser(emailId : string)
+    {
+        let response = null
+        if(await this.database.connectToDatabase())
+            {
+                // Find the user document by email and update its currency amount
+                try{
+                    response = await this.currencyCollection.create(
+                        {emailId: emailId, 'totalMoney' : 0}
+                    );
+                }
+                catch(e){
+                    console.error(e)
+                }
+            }
+            return response
+    }
+
+    async addCurrencyWithId(amount: number, emailId: string): Promise<ICurrencyDocument | undefined> {
         if (amount <= 0) {
-            throw new Error("Amount must be greater than 0");
+            console.error("Amount to add cannot be 0!")
+            return
         }
+        let response
 
 
         if(await this.database.connectToDatabase())
         {
             // Find the user document by email and update its currency amount
             try{
-                let response = await this.currencyCollection.findOneAndUpdate(
+                response = await this.currencyCollection.findOneAndUpdate(
                     {emailId: emailId},
                     {$inc: {'totalMoney': amount}},
-                    {new: true}  // return the updated document
+                    {upsert : true, returnDocument:'after'}  // return the updated document
                 );
-
-                if(response)
-                {
-                    return true
-                }
-                else {
-                    const document = {
-                        emailId : emailId,
-                        totalMoney : amount
-                    }
-                    response = await this.currencyCollection.create(document)
-                }
-                return true
             }
             catch(e){
                 console.error(e)
             }
         }
-        return false
+        return response
     }
 
     async deductFromUserAccountByID(amount: number, emailId: string): Promise<ICurrencyDocument | null> {
@@ -85,10 +92,9 @@ export class CurrencyDatabase implements ICurrencyDatabase {
         {
             try{
                 result = await this.currencyCollection.findOne({emailId: emailId});
-                if (result) {
-                    return result;
-                } else {
-                    throw new Error("User not found");
+                if(!result)
+                {
+                    result = await this.createNewUser(emailId)
                 }
             }
             catch(e)

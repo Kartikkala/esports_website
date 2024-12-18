@@ -4,11 +4,39 @@ import { OTPObject, IOtpGenerationResult } from '../../types/lib/authorisation/t
 
 export default class Authorisation{
     private _transporter : nodemailer.Transporter | undefined
+    private static _instance : Authorisation | undefined = undefined
     private _senderEmail : string | undefined
     private _emailToOtpMap : Map<string, OTPObject> = new Map<string, OTPObject>
-    constructor(serviceName? : string, serviceHostAddress? : string, servicePortNumber? : number, secure? : boolean, email? : string, password? : string)
+    private constructor(serviceName? : string, serviceHostAddress? : string, servicePortNumber? : number, secure? : boolean, email? : string, password? : string)
     {
         this.setTransporter(serviceName, serviceHostAddress, servicePortNumber, secure, email, password)
+    }
+    public static async getInstance(serviceName? : string, serviceHostAddress? : string, servicePortNumber? : number, secure? : boolean, email? : string, password? : string, testEmail? : string)
+    {
+        if(!this._instance)
+        {
+            this._instance = new Authorisation(serviceName, serviceHostAddress, servicePortNumber, secure, email, password)
+            try{
+                if(this._instance && this._instance._transporter)
+                {
+                        await this._instance._transporter.sendMail({
+                        from : {
+                            name : "Esports Website Test",
+                            address : this._instance._senderEmail || "kartikkala10december@gmail.com"
+                        },
+                        to : testEmail,
+                        subject : "Testing mail service for Esports Website",
+                        html : `Test was successful! Website is up!`,
+                    })
+                    return this._instance
+                }
+            }
+            catch(e)
+            {
+                console.error(e)
+                process.exit(-1)
+            }
+        }
     }
     public setTransporter(serviceName? : string, serviceHostAddress? : string, servicePortNumber? : number, secure? : boolean, email? : string, password? : string) : boolean{
         if(serviceName && serviceHostAddress && typeof secure === 'boolean' && email && password && servicePortNumber)
@@ -21,7 +49,11 @@ export default class Authorisation{
                 auth : {
                     user : email,
                     pass : password
-                }
+                },
+                connectionTimeout : 10000,
+                dnsTimeout : 10000,
+                socketTimeout : 10000,
+                greetingTimeout : 10000
             })
             this._senderEmail = email
             return true
@@ -54,8 +86,8 @@ export default class Authorisation{
                                 address : this._senderEmail
                             },
                             to : recipientEmail,
-                            subject : "OTP for Personal Cloud Drive",
-                            html : `Your otp for cloud drive is : <b>${existingUser.otp}</b>. This otp is valid for 10 minutes!`,
+                            subject : "OTP for Esports Website",
+                            html : `Your otp for esports Website is : <b>${existingUser.otp}</b>. This otp is valid for 10 minutes!`,
                         })
                         result.success = true
                         result.triesLeft-= existingUser.tries
@@ -86,6 +118,13 @@ export default class Authorisation{
                         to : recipientEmail,
                         subject : "OTP for Personal Cloud Drive",
                         html : `Your otp for cloud drive is : <b>${otp}</b>. This otp is valid for 10 minutes!`
+                    }, (e)=>{
+                        if(e)
+                        {
+                            console.error(e)
+                            result.success = false
+                            result.error = true
+                        }
                     })
                     const userOtpObject : OTPObject = {
                         tries : 1,

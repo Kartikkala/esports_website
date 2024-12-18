@@ -35,7 +35,7 @@ const databaseFactory = DatabaseFactory.getInstance(dbConnectionString, {
 
 
 const authenticationFactory = AuthenticationFactory.getInstance(databaseFactory.getAuthenticationDatabase(), {"keypair_directory" : "keys", "publickey_filename" : "key.pub", "privatekey_filename" : "key.pem"})
-const authorizationFactory = AuthorisationMiddlewareFactory.getInstance(appConfig.smtpServiceName, appConfig.smtpServerAddress, appConfig.smtpServerPortNumber, false, appConfig.smtpServerEmail, senderEmailPassword, appConfig.smtpServerSenderName, appConfig.smtpOtpLength)
+const authorizationFactory = await AuthorisationMiddlewareFactory.getInstance(appConfig.smtpServiceName, appConfig.smtpServerAddress, appConfig.smtpServerPortNumber, false, appConfig.smtpServerEmail, senderEmailPassword, appConfig.smtpServerSenderName, appConfig.smtpOtpLength)
 const gamesAndEventManagerFactoryObject = await GameAndEventsManagerFactory.getInstance(databaseFactory.getEventDatabase(), databaseFactory.getGameDatabase())
 
 const moneyManagerObject = MoneyManager.getInstance(databaseFactory.getCurrencyDatabase(), databaseFactory.getCoinPacksDatabase(), rzp)

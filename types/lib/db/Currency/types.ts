@@ -4,7 +4,7 @@ export interface ICurrencyDocument{
 }
 
 export interface ICurrencyDatabase{
-    addCurrencyWithId(amount : number, userEmail : string): Promise<Boolean>,
+    addCurrencyWithId(amount : number, userEmail : string): Promise<ICurrencyDocument | undefined>,
     deductFromUserAccountByID (amount : number , userEmail : string):Promise <ICurrencyDocument | null>,
     getTotalUserCurrencyById(userEmail :string ) : Promise<ICurrencyDocument | null>,
 }

@@ -11,8 +11,9 @@ export default function getAuthenticationRouter(authenticationFactory : Authenti
     authenticationRouter.post('/login', jwtAuthenticator.login)
     authenticationRouter.post('/register', authorization.verifyOtpMiddleware ,jwtAuthenticator.register, (request, response)=>{
         const registrationResult : IRegistrationResult = response.locals.registrationResult
-
+        
         registrationResult.user = undefined
+        console.log(registrationResult)
         switch (registrationResult.message){
             case 'UserCreationSuccessful':
                 return response.status(200).send(registrationResult)

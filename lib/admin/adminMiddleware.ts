@@ -23,8 +23,12 @@ export class AdminMiddleware {
             const prizepool = req.body.prizepool;
             const fee = req.body.fee;
             const eventDateTime = req.body.eventDateTime
-            
+            if(!(gameId && prizepool && fee && eventDateTime))
+            {
+                return res.status(400).json('Invalid request!')
+            }
             const gameEvent: IGameEvent | undefined = await this.adminInstance.createGameEvent(req.user, gameId, prizepool, eventDateTime, fee);
+            
             
             if (gameEvent) {
 
