@@ -16,9 +16,10 @@ import EventRegistrationRouter from "./routes/eventRegistrationRoutes.js";
 import ShopRouter from "./routes/shopRoutes.js";
 import MoneyManager from "./lib/moneyManager/moneyManager.js";
 import Razorpay from 'razorpay'
+import TermsAndConditions from "./lib/T&C/T&C.js";
 
 const app = express();
-const rzp = new Razorpay({key_id : "something"}) // Change this
+const rzp = new Razorpay({key_id : "something", key_secret : "somethingelse"}) // Change this
 config({path : ".env"})
 
 
@@ -38,11 +39,11 @@ const authenticationFactory = AuthenticationFactory.getInstance(databaseFactory.
 const authorizationFactory = await AuthorisationMiddlewareFactory.getInstance(appConfig.smtpServiceName, appConfig.smtpServerAddress, appConfig.smtpServerPortNumber, false, appConfig.smtpServerEmail, senderEmailPassword, appConfig.smtpServerSenderName, appConfig.smtpOtpLength)
 const gamesAndEventManagerFactoryObject = await GameAndEventsManagerFactory.getInstance(databaseFactory.getEventDatabase(), databaseFactory.getGameDatabase())
 
-const moneyManagerObject = MoneyManager.getInstance(databaseFactory.getCurrencyDatabase(), databaseFactory.getCoinPacksDatabase(), rzp)
+const moneyManagerObject = MoneyManager.getInstance(databaseFactory.getCurrencyDatabase(), databaseFactory.getCoinPacksDatabase(), rzp, "something")
+const termsAndConditions = new TermsAndConditions(databaseFactory.getTermsAndConditonsDatabase())
 
 
-
-const authenticationRouter = getAuthenticationRouter(authenticationFactory, authorizationFactory)
+const authenticationRouter = getAuthenticationRouter(authenticationFactory, authorizationFactory, termsAndConditions)
 const eventRegistrationRouter = EventRegistrationRouter(gamesAndEventManagerFactoryObject, moneyManagerObject)
 
 const shopRouter = ShopRouter(moneyManagerObject)

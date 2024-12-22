@@ -13,6 +13,10 @@ export function currencySchema(mongoose: IDatabase): Schema<ICurrencyDocument> {
             type : Number,
             default : 0,
             min : 0
+        },
+        upiId : {
+            type : String,
+            required : false
         }
     });
 }

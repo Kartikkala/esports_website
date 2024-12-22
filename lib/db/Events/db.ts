@@ -38,7 +38,7 @@ export class GameEventsDatabase implements IGameEventsDatabase{
             try{
                 let sanitizedEvent : IGameEventDocument = {
                     eventId : gameEvent.eventId,
-                    players : Array.from(gameEvent.players),
+                    players : gameEvent.players,
                     eventDateTime : String(gameEvent.eventDateTime),
                     gameId : gameEvent.game.gameId,
                     prizepool : gameEvent.prizepool,
@@ -68,12 +68,12 @@ export class GameEventsDatabase implements IGameEventsDatabase{
         return false;
     }
     
-    async updatePlayers(gameEventId: string, players: Array<string>): Promise<boolean>  {
+    async updatePlayers(gameEventId: string, players : Map<string, string[]>): Promise<boolean>  {
         const connectionStatus = await this.database.connectToDatabase();
         
         if (connectionStatus)   {
             try  {
-                await this.gameEventCollection.updateOne({ eventId: gameEventId }, { $set: { players: players } }); 
+                await this.gameEventCollection.updateOne({ eventId: gameEventId }, { $set: { players : players} }); 
                 return true;
              } catch (e)  {
                 console.error(e);

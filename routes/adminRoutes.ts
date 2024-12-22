@@ -9,7 +9,7 @@ export default function AdminRouter(gameAndEventsManagerFactory : IGameAndEvents
     const router = express.Router();
     router.use(express.json()); // for parsing application/json
 
-    const adminMiddlewareInstance = AdminMiddleware.getInstance(gameAndEventsManagerFactory);
+    const adminMiddlewareInstance = AdminMiddleware.getInstance(gameAndEventsManagerFactory, moneyManager);
 
     // Create game route
     router.post('/createGame', adminMiddlewareInstance.createGameMiddleware);

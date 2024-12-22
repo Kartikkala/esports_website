@@ -8,6 +8,11 @@ export default function EventRegistrationRouter(gameAndEventsManagerFactory : IG
     const router = express.Router();
     router.use(express.json()); // for parsing application/json
 
+    function sanitize(STRING : string)
+    {
+      return STRING.replace(/\./g, '');
+    }
+
 
     router.get("/events", (req, res)=>{
         if(req.user)
@@ -35,7 +40,7 @@ export default function EventRegistrationRouter(gameAndEventsManagerFactory : IG
                 else
                 {
                     upcomingEvents.push(shortenedEvent)
-                    selectedEvent.players.has(req.user.email) ? registeredEvents.push(shortenedEvent) : null
+                    selectedEvent.players.has(sanitize(req.user.email)) ? registeredEvents.push(shortenedEvent) : null
                 }
             }
             res.json({
@@ -50,7 +55,7 @@ export default function EventRegistrationRouter(gameAndEventsManagerFactory : IG
 
         // --------------------------------------------------------------If user is already registered, why register him/her again and again--------------------------------------------------------------------------------------------------------------
         // Use inbuilt money class
-        if(req.user && req.body && req.body.eventId)
+        if(req.user && req.body && req.body.eventId && req.body.inGameId)
         {
             const event = gameAndEventsManagerFactory.getEvent(req.body.eventId)
             if(event)
@@ -63,7 +68,7 @@ export default function EventRegistrationRouter(gameAndEventsManagerFactory : IG
                         }
                             
                         const newMoney = (await moneyManager.deductMoney(req.user.email, event.fee))?.totalMoney
-                        const eventRegistrationResult = await gameAndEventsManagerFactory.registerPlayerForEvent(req.body.eventId, req.user.email)
+                        const eventRegistrationResult = await gameAndEventsManagerFactory.registerPlayerForEvent(req.body.eventId, req.body.inGameId ,req.user.email)
 
                         //--------------------------------- Replace with mongodb transactions ---------------------------------//
 
@@ -79,7 +84,7 @@ export default function EventRegistrationRouter(gameAndEventsManagerFactory : IG
                         }
                         
                     return res.json({
-                        success : (oldMoney != newMoney) && (event.players.has(req.user.email)),
+                        success : (oldMoney != newMoney),
                         newMoney : newMoney
                     })
                 }

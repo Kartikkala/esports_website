@@ -11,7 +11,7 @@ export interface IGame{
 export interface IGameEvent{
     game : IGame,
     eventDateTime : String,
-    players: Set<string> ,
+    players: Map<string, string[]> ,
     eventStatus : boolean,
     eventId : string,
     roomId : string | undefined,
@@ -19,7 +19,7 @@ export interface IGameEvent{
     fee : number,
     publishRoomID(roomId: string): void,
     changeEventStatus() : boolean,
-    addPlayer(email: string): boolean,
+    addPlayer(email: string, playerId : string): boolean,
     removePlayer(email: string): boolean,
 }
 
@@ -35,9 +35,9 @@ export interface IGameManager {
 export interface IGameAndEventsManagerFactory {
     createEvent(game: IGame, prizepool: number, eventDateTime : string ,fee? : number): Promise<IGameEvent | undefined>;
     getEvent(eventId: string): IGameEvent | undefined;
-    deleteEvent(eventId: string): Promise<boolean>;
+    deleteEvent(eventId: string): Promise<Boolean | {players : Map<string, string[]>, fee : number, status : boolean}>;
     getAllEvents() : Array<IGameEvent>,
-    registerPlayerForEvent(eventId : string, email : string) : Promise<Boolean>,
+    registerPlayerForEvent(eventId : string, newPlayerInGameId : string ,email : string) : Promise<Boolean>,
     
     getGameWithId(gameId  : string)  : IGame | undefined
     createNewGame(name: string, type: boolean, maxTeams?: number, maxTeamMembers?: number, modeName?: string, imageBanner?: Buffer): Promise<boolean>;

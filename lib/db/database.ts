@@ -9,6 +9,8 @@ import { ICoinPacksDatabase } from "../../types/lib/db/CoinPacks/types.js"
 import { CoinPacksDatabase } from "./CoinPacks/db.js"
 import { ICurrencyDatabase } from "../../types/lib/db/Currency/types.js"
 import { CurrencyDatabase } from "./Currency/db.js"
+import { TermsAndConditionsDatabase } from "./T&C/db.js"
+import { ITermsAndConditionsDatabase } from "../../types/lib/db/termsAndConditions/types.js"
 
 
 export default class DatabaseFactory{
@@ -20,6 +22,7 @@ export default class DatabaseFactory{
     private readonly GameEventDatabase : IGameEventsDatabase
     private readonly CoinPacksDatabase : ICoinPacksDatabase
     private readonly CurrencyDatabase : ICurrencyDatabase
+    private readonly TermsAndConditonsDatabase : ITermsAndConditionsDatabase
 
     //--------------------Make proper changes form continue here------------------------------------//
 
@@ -48,6 +51,7 @@ export default class DatabaseFactory{
         this.GameEventDatabase = new GameEventsDatabase(this.database, eventCollectionName)
         this.CurrencyDatabase = new CurrencyDatabase(this.database, currencyCollectionName)
         this.CoinPacksDatabase = new CoinPacksDatabase(this.database, coinPacksCollectionname)
+        this.TermsAndConditonsDatabase = new TermsAndConditionsDatabase(this.database)
     }    
     public static getInstance(mongoDbConnectionString : string | undefined, db_configs : any)
     {
@@ -75,5 +79,9 @@ export default class DatabaseFactory{
     getCoinPacksDatabase()
     {
         return this.CoinPacksDatabase
+    }
+    getTermsAndConditonsDatabase()
+    {
+        return this.TermsAndConditonsDatabase
     }
 }

@@ -1,18 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import {Admin} from './admin.js';
 import { IGameAndEventsManagerFactory, IGameEvent } from '../../types/lib/gamesManagement/game.js';
+import MoneyManager from '../moneyManager/moneyManager.js';
 
 export class AdminMiddleware {
     private static adminMiddlewareInstance : AdminMiddleware | null = null;
     private adminInstance: Admin;
-    private constructor(gameAndEventsManagerFactory : IGameAndEventsManagerFactory) {
+    private moneyManager : MoneyManager
+    private constructor(gameAndEventsManagerFactory : IGameAndEventsManagerFactory, moneyManager : MoneyManager) {
         this.adminInstance = Admin.getInstance(gameAndEventsManagerFactory);
+        this.moneyManager = moneyManager
     } 
 
-    public static getInstance(gameAndEventsManagerFactory : IGameAndEventsManagerFactory){
+    public static getInstance(gameAndEventsManagerFactory : IGameAndEventsManagerFactory, moneyManager : MoneyManager){
         if(!this.adminMiddlewareInstance)
         {
-            this.adminMiddlewareInstance = new AdminMiddleware(gameAndEventsManagerFactory);
+            this.adminMiddlewareInstance = new AdminMiddleware(gameAndEventsManagerFactory, moneyManager);
         }
         return this.adminMiddlewareInstance;
      }
@@ -156,7 +159,20 @@ export class AdminMiddleware {
     public deleteGameEventMiddleware = async (req: Request, res: Response, next: NextFunction) => {
         if(req.user?.admin && req.body.eventId){     // only admin can delete an event
             try{
-                await this.adminInstance.deleteEvent(req.user, req.body.eventId);
+                const event = await this.adminInstance.deleteEvent(req.user, req.body.eventId);
+                if(!(event instanceof Boolean) && !event.status)
+                {
+                    Array.from(event.players.values()).forEach(async (player)=>{
+                        try{
+                            await this.moneyManager.addMoney(player[0], event.fee) // Original email ID stored in 0th index of the players array
+                        }
+                        catch(e)
+                        {
+                            console.error(e)
+                            console.log("Error refunding money!")
+                        }
+                    })
+                }
                 res.json({success: true});
             } catch(err) {
                 console.error(err);

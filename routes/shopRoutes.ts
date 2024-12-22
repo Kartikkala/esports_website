@@ -20,19 +20,31 @@ export default function ShopRouter(moneyManager : MoneyManager)
 
     router.get("/getPacks", async (req, res)=>{
         const packs = await moneyManager.getMoneypacks()
-        res.json({
+        return res.json({
             "packs" : packs
         })
     })
 
-    router.post("/buyPack", async(req, res)=>{
+    router.post('/createMoneyOrder', async (req, res)=>{
         if(req.body && req.body.packId && req.user)
         {
-            console.log(req.user)
-            const result = await moneyManager.buyMoneyPack(req.user.email, req.body.packId)
-            return res.json({"success" : result})
+            const order = await moneyManager.createMoneyOrder(req.user.email, req.body.packId)
+            if(order)
+            {
+                return res.json(order)
+            }
+            return res.status(500).send("Order creation failed!")
         }
         return res.status(400).send("packId parameter missing!")
+    })
+
+    router.post("/buyPack", async(req, res)=>{
+        if(req.body && req.body.packId && req.user && req.body.orderId && req.body.paymentId && req.body.signature)
+        {
+            const result = await moneyManager.buyMoneyPack(req.user.email, req.body.packId, req.body.orderId, req.body.paymentId, req.body.signature)
+            return res.json({"success" : result})
+        }
+        return res.status(400).send("packId/orderId/paymentId/signature parameter missing!")
     })
 
 

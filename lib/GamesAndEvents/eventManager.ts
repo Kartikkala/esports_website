@@ -7,7 +7,7 @@ import crypto from 'crypto'
 
 class GameEvent extends EventEmitter implements IGameEvent{
   public readonly game : IGame;
-  public readonly players: Set<string> = new Set();
+  public readonly players: Map<string, string[]> = new Map();
   private _eventStatus : boolean = false
   public readonly eventId : string
   public roomId : string | undefined
@@ -15,7 +15,7 @@ class GameEvent extends EventEmitter implements IGameEvent{
   private _fee : number
   private _eventDateTime : string
   
-  constructor(game: IGame, prizepool : number = 0, eventDateTime : string ,fee : number = 0, eventId : string = crypto.randomUUID().toString(), players?: string[]) {
+  constructor(game: IGame, prizepool : number = 0, eventDateTime : string ,fee : number = 0, eventId : string = crypto.randomUUID().toString(), players?: Map<string, string[]>) {
     super();
     this.game = game;
     this._prizepool = prizepool
@@ -25,9 +25,7 @@ class GameEvent extends EventEmitter implements IGameEvent{
     
     if(players !== undefined)
       {
-        for (let user of players) {
-          this.players.add(user);
-        }
+        this.players = players
     }
   }
   
@@ -37,11 +35,16 @@ class GameEvent extends EventEmitter implements IGameEvent{
     this.emit('event', roomId, Array.from(this.players));
   }
 
+  private sanitize(STRING : string)
+  {
+    return STRING.replace(/\./g, '');
+  }
 
-  public addPlayer(email: string): boolean {
-    if(this.players.size <= (this.game.maxTeams * this.game.maxTeamMembers))
+
+  public addPlayer(email: string, inGameId : string): boolean {
+    if(this.players.size <= (this.game.maxTeams * this.game.maxTeamMembers) && !this.players.has(this.sanitize(email)))
     {
-      this.players.add(email);
+      this.players.set(this.sanitize(email), [email, inGameId]);
       return true;
     }
     return false
@@ -133,20 +136,30 @@ export class GameEventsManager {
   }
 
   // Method to delete a game event
-  public async deleteEvent(eventId : string): Promise<boolean> {
+  public async deleteEvent(eventId : string): Promise<Boolean | {players : Map<string, string[]>, fee : number, status : boolean}> {
     const event = this.eventsMap.get(eventId)
     if(event)
     {
       await this.database.endGameEvent(event);
+      if(event)
+      {
+        const playerDetails = {
+          players : event.players,
+          fee : event.fee,
+          status : event.eventStatus
+        }
+        this.eventsMap.delete(eventId)
+        return playerDetails
+      }
     }
-    return this.eventsMap.delete(eventId);
+    return false;
   }
 
-  public async registerForEvent(email: string, eventId: string): Promise<boolean> {
+  public async registerForEvent(email: string, inGameId : string ,eventId: string): Promise<boolean> {
     const event = this.getEvent(eventId)
-    if (event && !event.players.has(email)){
-      event.addPlayer(email);
-      await this.database.updatePlayers(eventId, Array.from(event.players));
+    
+    if (event && event.addPlayer(email, inGameId)){
+      await this.database.updatePlayers(eventId, event.players);
       return true;
     } 
     return false

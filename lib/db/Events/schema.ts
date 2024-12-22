@@ -8,7 +8,10 @@ export function gameEventSchema(mongoose: IDatabase): Schema<IGameEventDocument>
             type: String, 
             required: true                  // This field is mandatory and every game event should refer to a game
         },
-        players: [String],                   // The list of user ids participating in this event
+        players: {
+            type : Map,
+            of : [String],
+        },                   // The list of user ids participating in this event
         gameId : String,
         prizepool : Number,
         fee : Number,
