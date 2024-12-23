@@ -35,6 +35,20 @@ class GameEvent extends EventEmitter implements IGameEvent{
     this.emit('event', roomId, Array.from(this.players));
   }
 
+  public declareWinner(inGameId : string)
+  {
+    const playersArray = Array.from(this.players.values())
+    for(let i=0;i<playersArray.length;i++)
+    {
+      const playerArray = playersArray[i]
+        if(playerArray[1] === inGameId)
+        {
+          return playerArray[0] // Return the player's email address
+        }
+    }
+    return null
+  }
+
   private sanitize(STRING : string)
   {
     return STRING.replace(/\./g, '');
@@ -153,6 +167,11 @@ export class GameEventsManager {
       }
     }
     return false;
+  }
+
+  public getWinnerDetails(eventId : string, playerInGameId : string) : null | string | undefined
+  {
+    return this.getEvent(eventId)?.declareWinner(playerInGameId)
   }
 
   public async registerForEvent(email: string, inGameId : string ,eventId: string): Promise<boolean> {

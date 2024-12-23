@@ -96,6 +96,11 @@ export default class MoneyManager{
         // What the hell is the admin supposed to do with this. Add the winner's In game ID as well, that can be used to search this upi ID while declaring the winner.
     }
 
+    public async getUpiIdWithEmail(email : string)
+    {
+        return (await this.currencyDb.getTotalUserCurrencyById(email))?.upiId
+    }
+
     public async createMoneyPack(coins : number, price : number)
     {
         return await this.coinPacksDb.createCoinPack(coins, price)

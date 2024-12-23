@@ -41,6 +41,11 @@ export default class GameAndEventsManagerFactory implements IGameAndEventsManage
         return await this.gameEventsManager.deleteEvent(eventId);
     }
 
+    public getWinnerDetails(eventId : string, playerInGameId : string) : null | string | undefined
+    {
+        return this.gameEventsManager.getWinnerDetails(eventId, playerInGameId)
+    }
+
     public async registerPlayerForEvent(eventId : string, inGameId : string ,email : string)
     {
         return await this.gameEventsManager.registerForEvent(email,inGameId ,eventId)

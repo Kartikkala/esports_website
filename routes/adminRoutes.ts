@@ -43,6 +43,31 @@ export default function AdminRouter(gameAndEventsManagerFactory : IGameAndEvents
         res.status(401).send("Unauthorized!")
     })
     
+    router.post("/declareWinner", async (req, res)=>{
+        if(req.user && req.user.admin)
+        {
+            if(req.body.inGameId && req.body.eventId)
+            {
+                const event = gameAndEventsManagerFactory.getEvent(req.body.eventId)
+                if(event)
+                {
+                    const winnerEmail = gameAndEventsManagerFactory.getWinnerDetails(req.body.eventId, req.body.inGameId)
+                    if(winnerEmail)
+                    {
+                        const upi = await moneyManager.getUpiIdWithEmail(winnerEmail) 
+                        if(upi)
+                        {
+                            return res.json({"upi" : upi})
+                        }
+                        return res.status(402).send("UPI ID not entered!")
+                    }
+                    return res.status(404).send("User not found")
+                }
+                return res.status(405).send("Event not found")
+            }
+            return res.status(400).send("Bad request!")
+        }
+    })
     
     return router;
 }

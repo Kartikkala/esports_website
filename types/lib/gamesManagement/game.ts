@@ -18,6 +18,7 @@ export interface IGameEvent{
     prizepool : number,
     fee : number,
     publishRoomID(roomId: string): void,
+    declareWinner(inGameId : string) : string | null,
     changeEventStatus() : boolean,
     addPlayer(email: string, playerId : string): boolean,
     removePlayer(email: string): boolean,
@@ -38,6 +39,7 @@ export interface IGameAndEventsManagerFactory {
     deleteEvent(eventId: string): Promise<Boolean | {players : Map<string, string[]>, fee : number, status : boolean}>;
     getAllEvents() : Array<IGameEvent>,
     registerPlayerForEvent(eventId : string, newPlayerInGameId : string ,email : string) : Promise<Boolean>,
+    getWinnerDetails(eventId : string, playerInGameId : string) : null | string | undefined,
     
     getGameWithId(gameId  : string)  : IGame | undefined
     createNewGame(name: string, type: boolean, maxTeams?: number, maxTeamMembers?: number, modeName?: string, imageBanner?: Buffer): Promise<boolean>;
