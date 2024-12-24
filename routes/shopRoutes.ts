@@ -17,6 +17,32 @@ export default function ShopRouter(moneyManager : MoneyManager)
         return res.status(500).send("Internal Server error!")
     })
 
+    router.get("/upi", async (req, res)=>{
+        if(req.user)
+        {
+            const upi = await moneyManager.getUpiIdWithEmail(req.user.email)
+            return res.json({
+                "success" : upi !== undefined,
+                "upi" : upi
+            })                
+        }
+        return res.status(401).send("Unauthorized!")
+    })
+
+    router.post("/upi", async (req, res)=>{
+        if(req.user)
+        {
+            if(req.body && req.body.upi)
+            {
+                const upi = await moneyManager.updateUpiId(req.user.email, req.body.upi)
+                return res.json({
+                    "success" : upi
+                })
+            }
+            return res.status(400).send("Invalid request body!")
+        }
+        return res.status(401).send("Unauthorized!")
+    })
 
     router.get("/getPacks", async (req, res)=>{
         const packs = await moneyManager.getMoneypacks()
