@@ -17,6 +17,8 @@ import ShopRouter from "./routes/shopRoutes.js";
 import MoneyManager from "./lib/moneyManager/moneyManager.js";
 import Razorpay from 'razorpay'
 import TermsAndConditions from "./lib/T&C/T&C.js";
+import NotificationRouter from "./routes/notificationRoutes.js";
+import NotificationManager from "./lib/notifications/notificationManager.js";
 
 const app = express();
 const rzp = new Razorpay({key_id : "something", key_secret : "somethingelse"}) // Change this
@@ -45,6 +47,7 @@ const termsAndConditions = new TermsAndConditions(databaseFactory.getTermsAndCon
 
 const authenticationRouter = getAuthenticationRouter(authenticationFactory, authorizationFactory, termsAndConditions)
 const eventRegistrationRouter = EventRegistrationRouter(gamesAndEventManagerFactoryObject, moneyManagerObject)
+const notificationRouter = NotificationRouter(new NotificationManager(databaseFactory.getNotificationdatabase()))
 
 const shopRouter = ShopRouter(moneyManagerObject)
 const __filename = fileURLToPath(import.meta.url)
@@ -75,6 +78,7 @@ app.use("/api/", authenticationRouter)
 app.use("/api/admin", authenticationFactory.jwtAuthenticator.authenticate, authenticationFactory.jwtAuthenticator.isAuthenticated, AdminRouter(gamesAndEventManagerFactoryObject, moneyManagerObject))
 app.use("/api/events", authenticationFactory.jwtAuthenticator.authenticate, authenticationFactory.jwtAuthenticator.isAuthenticated ,eventRegistrationRouter)
 app.use("/api/shop",authenticationFactory.jwtAuthenticator.authenticate,  authenticationFactory.jwtAuthenticator.isAuthenticated ,shopRouter)
+app.use("/api/notifications", authenticationFactory.jwtAuthenticator.authenticate, authenticationFactory.jwtAuthenticator.isAuthenticated, notificationRouter)
 
 
 app.listen(80 , "0.0.0.0" ,()=>{

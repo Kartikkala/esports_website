@@ -11,6 +11,7 @@ import { ICurrencyDatabase } from "../../types/lib/db/Currency/types.js"
 import { CurrencyDatabase } from "./Currency/db.js"
 import { TermsAndConditionsDatabase } from "./T&C/db.js"
 import { ITermsAndConditionsDatabase } from "../../types/lib/db/termsAndConditions/types.js"
+import { NotificationDatabase } from "./Notifications/db.js"
 
 
 export default class DatabaseFactory{
@@ -23,6 +24,7 @@ export default class DatabaseFactory{
     private readonly CoinPacksDatabase : ICoinPacksDatabase
     private readonly CurrencyDatabase : ICurrencyDatabase
     private readonly TermsAndConditonsDatabase : ITermsAndConditionsDatabase
+    private readonly NotificationDatabase : NotificationDatabase
 
     //--------------------Make proper changes form continue here------------------------------------//
 
@@ -52,6 +54,7 @@ export default class DatabaseFactory{
         this.CurrencyDatabase = new CurrencyDatabase(this.database, currencyCollectionName)
         this.CoinPacksDatabase = new CoinPacksDatabase(this.database, coinPacksCollectionname)
         this.TermsAndConditonsDatabase = new TermsAndConditionsDatabase(this.database)
+        this.NotificationDatabase = new NotificationDatabase(this.database)
     }    
     public static getInstance(mongoDbConnectionString : string | undefined, db_configs : any)
     {
@@ -83,5 +86,9 @@ export default class DatabaseFactory{
     getTermsAndConditonsDatabase()
     {
         return this.TermsAndConditonsDatabase
+    }
+    getNotificationdatabase()
+    {
+        return this.NotificationDatabase
     }
 }
